@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Search, MapPin, Filter, Zap, Clock, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import ChargerCard from "./ChargerCard";
+import ChargerCard, { ChargerData } from "./ChargerCard";
+import BookingModal from "./BookingModal";
 
-const mockChargers = [
+const mockChargers: ChargerData[] = [
   {
     id: "1",
     name: "Tesla Supercharger - Downtown",
@@ -74,11 +75,23 @@ const MapSection = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedConnectors, setSelectedConnectors] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedCharger, setSelectedCharger] = useState<ChargerData | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   const toggleConnector = (value: string) => {
     setSelectedConnectors((prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     );
+  };
+
+  const handleBookCharger = (charger: ChargerData) => {
+    setSelectedCharger(charger);
+    setIsBookingOpen(true);
+  };
+
+  const handleCloseBooking = () => {
+    setIsBookingOpen(false);
+    setSelectedCharger(null);
   };
 
   return (
@@ -243,13 +256,22 @@ const MapSection = () => {
                   className="animate-slide-up"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <ChargerCard charger={charger} />
+                  <ChargerCard charger={charger} onBook={handleBookCharger} />
                 </div>
               ))}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      {selectedCharger && (
+        <BookingModal
+          isOpen={isBookingOpen}
+          onClose={handleCloseBooking}
+          charger={selectedCharger}
+        />
+      )}
     </section>
   );
 };

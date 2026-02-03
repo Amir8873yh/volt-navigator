@@ -1,22 +1,25 @@
 import { Zap, MapPin, Star, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface ChargerProps {
-  charger: {
-    id: string;
-    name: string;
-    address: string;
-    distance: string;
-    available: number;
-    total: number;
-    speed: string;
-    type: string;
-    pricePerKwh: number;
-    rating: number;
-  };
+export interface ChargerData {
+  id: string;
+  name: string;
+  address: string;
+  distance: string;
+  available: number;
+  total: number;
+  speed: string;
+  type: string;
+  pricePerKwh: number;
+  rating: number;
 }
 
-const ChargerCard = ({ charger }: ChargerProps) => {
+interface ChargerProps {
+  charger: ChargerData;
+  onBook: (charger: ChargerData) => void;
+}
+
+const ChargerCard = ({ charger, onBook }: ChargerProps) => {
   const availabilityPercent = (charger.available / charger.total) * 100;
   const isLowAvailability = charger.available <= 2;
 
@@ -70,7 +73,7 @@ const ChargerCard = ({ charger }: ChargerProps) => {
               <div
                 className={`h-full rounded-full transition-all ${
                   isLowAvailability 
-                    ? "bg-gradient-to-r from-destructive to-orange-500" 
+                    ? "bg-gradient-to-r from-destructive to-destructive/70" 
                     : "bg-gradient-to-r from-primary to-secondary"
                 }`}
                 style={{ width: `${availabilityPercent}%` }}
@@ -81,7 +84,15 @@ const ChargerCard = ({ charger }: ChargerProps) => {
 
         {/* Right Action */}
         <div className="flex flex-col items-end gap-2">
-          <Button variant="glow" size="sm" className="group/btn">
+          <Button 
+            variant="glow" 
+            size="sm" 
+            className="group/btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              onBook(charger);
+            }}
+          >
             Book
             <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
           </Button>
